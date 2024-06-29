@@ -13,8 +13,8 @@ public class DataProcessServiceTask {
     @Autowired
     private DataProcessService service;
 
-    @Scheduled(cron = "${cron.expression}")
-    public void processData() throws IOException {
+    @Scheduled(cron = "${data.process.cron.expression}")
+    public void performTask() throws IOException {
         service.process();
     }
 

@@ -1,7 +1,6 @@
 package com.checkwithprayag.service;
 
-import com.checkwithprayag.domain.entity.Gig;
-import com.checkwithprayag.domain.repository.GigRepository;
+import com.checkwithprayag.domain.repository.BidRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -16,36 +15,37 @@ import java.time.format.DateTimeFormatter;
 
 
 @Service
-@FieldDefaults(level= AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class DataProcessService {
 
     @Autowired
     AzureBlobService azureBlobService;
 
     @Autowired
-    GigRepository gigRepository;
+    BidRepository bidRepository;
 
     public void process() throws IOException {
 
-        var allGigs = gigRepository.findAll();
+        var allBids = bidRepository.findAll();
 
-        if(!allGigs.isEmpty()) {
-            var gigJsonInputStream = convertObjectToJsonInputStream(allGigs.get(0));
-            azureBlobService.uploadToBlob(getBlobFilename(),gigJsonInputStream,gigJsonInputStream.available());
+        if (!allBids.isEmpty()) {
+            var gigJsonInputStream = convertObjectToJsonInputStream(allBids);
+            azureBlobService.uploadToBlob(getBlobFilename(), gigJsonInputStream, gigJsonInputStream.available());
         }
 
     }
 
-     InputStream convertObjectToJsonInputStream(Gig gig) throws IOException {
+    InputStream convertObjectToJsonInputStream(Object object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        byte[] gigJsonBytes = mapper.writeValueAsBytes(gig);
+        mapper.findAndRegisterModules();
+        byte[] gigJsonBytes = mapper.writeValueAsBytes(object);
         return new ByteArrayInputStream(gigJsonBytes);
     }
 
     String getBlobFilename() {
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmmss");
-        return now.format(formatter) + "-gig-"+".json";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return "all-bids-" + now.format(formatter) + ".json";
     }
 
 

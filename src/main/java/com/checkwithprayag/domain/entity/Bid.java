@@ -1,29 +1,29 @@
 package com.checkwithprayag.domain.entity;
 
-import com.checkwithprayag.domain.enums.GigStatus;
-import lombok.Builder;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Builder
-@Document(collection = "bids")
+@Entity
+@Table(name = "bid")
 public class Bid {
-    @MongoId
+    @Id
     private String id;
-    @DBRef
+    private Double amount;
+    private Integer daysToComplete;
+    private String status;
+    private LocalDateTime createdAt;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "gig_id")
     private Gig gig;
-    @DBRef
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "freelancer_id")
     private User freelancer;
-    private BigDecimal amount;
-    private int daysToComplete;
-    private GigStatus status;
-    private Date createdAt;
+
 }

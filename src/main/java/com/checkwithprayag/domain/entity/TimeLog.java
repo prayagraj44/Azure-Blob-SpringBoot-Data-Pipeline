@@ -1,27 +1,30 @@
 package com.checkwithprayag.domain.entity;
 
-import lombok.Builder;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
 @Setter
-@Builder
-@Document(collection = "time_logs")
+@Entity
+@Table(name = "time_logs")
 public class TimeLog {
-    @MongoId
+    @Id
     private String id;
-    @DBRef
-    private Gig gig;
-    @DBRef
-    private User freelancer;
-    private double hoursWorked;
+    private Double hoursWorked;
     private Date workDate;
     private String description;
-    private Date createdAt;
+    private LocalDateTime createdAt;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "gig_id")
+    private Gig gig;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "freelancer_id")
+    private User freelancer;
+
 }
